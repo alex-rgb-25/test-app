@@ -21,12 +21,13 @@
             <th>Denumire</th>
             <th width='100px'>Tip</th>
             <th width='60px'>Apreciată</th>
-            <th rowspan='2' width='70px'></th>
+            <th rowspan='1' width='70px'></th>
           </tr>
           <tr>
+            <th><input [(ngModel)]="nume" class='form-control input-xs' placeholder='Căutare...'></th>
+            <th><input [(ngModel)]="tip" class='form-control input-xs' placeholder='Căutare...'></th>
             <th><input class='form-control input-xs' placeholder='Căutare...'></th>
-            <th><input class='form-control input-xs' placeholder='Căutare...'></th>
-            <th><input class='form-control input-xs' placeholder='Căutare...'></th>
+            <th><button type="button" (click)="filter()">Filtreaza</button></th>
           </tr>
         </thead>
       </table>

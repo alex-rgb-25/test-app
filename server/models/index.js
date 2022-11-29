@@ -1,3 +1,5 @@
+const { AssociationError } = require('sequelize');
+
 module.exports = function getModels(sequelize, Sequelize) {
   'use strict';
 
@@ -31,6 +33,9 @@ module.exports = function getModels(sequelize, Sequelize) {
   const arr = [
     /************************ Information *********************/
     {path: __dirname + '/information.js', sync: true},
+    //{path: __dirname + '/junction.js', sync: true},
+    {path: __dirname + '/masini.js', sync: true},
+    {path: __dirname + '/persoane.js', sync: true},
   ];
 
   const syncTables = [];
@@ -43,7 +48,6 @@ module.exports = function getModels(sequelize, Sequelize) {
       require(path.join(file.path))(sequelize, Sequelize);
     }
   });
-
   for (let i = 0; i < fileTree.length; i++) {
     const tmp = arr.find(r => r.path === fileTree[i]);
 
@@ -52,7 +56,6 @@ module.exports = function getModels(sequelize, Sequelize) {
       let modelName = fileTree[i].substring(fileTree[i].lastIndexOf('/') + 1, fileTree[i].indexOf('.js'));
       modelName = modelName.charAt(0).toUpperCase() + modelName.slice(1);
       console.error('Nu este introdusă ruta pentru modelul: ' + modelName);
-
       syncTables.push(model);
     }
   }
@@ -63,6 +66,15 @@ module.exports = function getModels(sequelize, Sequelize) {
       file.sync({alter: true, logging: false});
     });
   }
+
+
+  Object.keys(sequelize.models).forEach(key => {
+    sequelize.sync()
+    if (sequelize.models[key] && sequelize.models[key].associate) {
+      console.log("sequelize.models[key] here: ",sequelize.models[key]);
+      sequelize.models[key].associate(sequelize.models);
+    }
+  });
 
   return sequelize;
 };

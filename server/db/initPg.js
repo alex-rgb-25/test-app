@@ -29,6 +29,12 @@ module.exports = function initPg(config) {
       const db = require('../models')(sequelize, Sequelize);
       resolve(db);
       console.info('Database connection successfully.');
+
     }).catch(e => reject(e));
+
+
+
   });
+
+
 };

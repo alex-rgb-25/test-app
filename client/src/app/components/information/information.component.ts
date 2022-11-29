@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Component, OnInit } from '@angular/core';
+import { Component,ViewChild, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { faPlus, faEdit, faTrashAlt, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import { SCROLL_TOP, SET_HEIGHT } from 'src/app/utils/utils-table';
@@ -7,16 +7,46 @@ import { InformationModalComponent } from './information-modal/information-modal
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { throws } from 'assert';
+
 
 @Component({
   selector: 'app-information',
   templateUrl: './information.component.html',
-  styleUrls: ['./information.component.scss']
-})
+  styleUrls: ['./information.component.scss'],
+}) 
+
+
+
 export class InformationComponent implements OnInit {
   faTrashAlt = faTrashAlt; faEdit = faEdit; faChevronUp = faChevronUp; faPlus = faPlus;
   limit: number = 70; showBackTop: string = '';
   informations: any = [];
+  filteredinformations: any = [];
+  username: string = '';
+  nume: string = '';
+  tip: string = '';
+
+  filter = (): void => {
+    console.log(this.nume)
+
+    this.filteredinformations= [];
+    this._spinner.show();
+    axios.get('/api/information').then(({ data }) => {
+      this.informations = data;
+      for(let i=0; i<data.length; i++) {
+        if(this.tip != ''){
+          if(data[i].name == this.nume && data[i].type == Number(this.tip)){
+            this.filteredinformations.push(data[i])
+          }
+        }
+        
+      }
+      this.informations = this.filteredinformations;
+      console.log("INFO:> ", this.filteredinformations)
+      this._spinner.hide();
+    }).catch(() => this.toastr.error('Eroare la preluarea informațiilor!'));
+  }
 
   constructor(private _modal: NgbModal, private _spinner: NgxSpinnerService, private toastr: ToastrService) { SET_HEIGHT('view', 20, 'height'); }
 
@@ -27,7 +57,9 @@ export class InformationComponent implements OnInit {
   loadData = (): void => {
     this._spinner.show();
     axios.get('/api/information').then(({ data }) => {
-      this.informations = data;
+        this.informations = data
+
+      
       this._spinner.hide();
     }).catch(() => this.toastr.error('Eroare la preluarea informațiilor!'));
   }
